@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminder Application</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+    .modal-backdrop {
+        display: none !important; /* Hide the black shadow overlay */
+    }
+</style>
+</head>
+<body class="bg-gray-100 p-8 md:px-16 lg:px-32 xl:px-48" style="zoom: 70%;">
+    <div class="container mx-auto py-8">
+        <h1 class="text-3xl font-bold mb-4">Reminder Application</h1>
+        <!-- Button to Add New Reminder -->
+        <button id="addReminderBtn" class="mt-4 btn btn-primary">
+            Add Reminder
+        </button>
+        <br><br><hr><br>
+        <!-- Display Submitted Reminders -->
+        <div class="overflow-x-auto">
+            {% for reminder in reminders %}
+            <div class="card border-dark mb-3" style="max-width: 180rem;" id="reminder_{{ reminder.id }}">
+                <div class="card-header"><strong><h5>Activity Title: <i>{{ reminder.serverName }}</i></h5></strong></div>
+                <div class="card-body text-black">
+                    <h5 class="card-title">Comments:</h5>
+                    <p class="card-text">{{ reminder.comments }}</p>
+                    <h5 class="card-title">Reminder Date:</h5>
+                    <p class="card-text">{{ reminder.date }}</p>
+                    <h5 class="card-title">Contacts:</h5>
+                    <p class="card-text">{{ reminder.email }}</p>
+                    <button type="button" class="btn btn-danger" onclick="deleteReminder('{{ reminder.id }}')">Delete</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Modal for Adding New Reminder -->
+        <div id="addReminderModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Reminder</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="addReminderForm">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="serverName" class="form-label">Activity Name</label>
+                                <input type="text" class="form-control" id="serverName" name="serverName" maxlength="100" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comments" class="form-label">Comments</label>
+                                <textarea class="form-control" id="comments" name="comments" maxlength="100"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="date" name="date" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email (Comma Separated organisation)</label>
+                                <input type="text" class="form-control" id="email" name="email" maxlength="100" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Include Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#addReminderBtn').click(function() {
+                $('#addReminderModal').modal('show');
+            });
+
+            $('#addReminderForm').submit(function(event) {
+                event.preventDefault();
+                var serverName = $('#serverName').val();
+                var comments = $('#comments').val();
+                var date = $('#date').val();
+                var email = $('#email').val();
+
+                // Check email format
+                var emailRegex = /(?:[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})/g;
+                if (!email.match(emailRegex)) {
+                    alert("Invalid email format.");
+                    return;
+                }
+
+                // Prepare data as JSON object
+                var data = {
+                    serverName: serverName.substring(0, 100),
+                    comments: comments.substring(0, 100),
+                    date: date,
+                    email: email.substring(0, 100)
+                };
+
+                // Send data to server
+                $.ajax({
+                    url: '/submit_form',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function(response) {
+                        console.log("Reminder added successfully.");
+                        $('#addReminderModal').modal('hide');
+                        window.location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Failed to add reminder:", error);
+                    }
+                });
+
+                // Clear form fields
+                $('#serverName').val('');
+                $('#comments').val('');
+                $('#date').val('');
+                $('#email').val('');
+            });
+        });
+
+        function deleteReminder(reminderId) {
+            var confirmation = confirm("Are you sure you want to delete this reminder?");
+            if (confirmation) {
+                $.ajax({
+                    url: '/delete_reminder/' + reminderId,
+                    type: 'DELETE',
+                    success: function(response) {
+                        {#$("#" + reminderId).remove(); // Use "#" to create a valid selector#}
+                        console.log("Reminder deleted successfully.");
+                        window.location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Failed to delete reminder:", error);
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
