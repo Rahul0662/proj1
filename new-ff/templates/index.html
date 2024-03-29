@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminder Application</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-8 md:px-16 lg:px-32 xl:px-48" style="zoom: 70%;">
+    <div class="container mx-auto py-8">
+        <h1 class="text-3xl font-bold mb-4">Reminder Application</h1>
+        <!-- Button to Add New Reminder -->
+        <button id="addReminderBtn" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Add Reminder
+        </button>
+        <br><br><hr><br>
+        <!-- Display Submitted Reminders -->
+    <div class="overflow-x-auto zoom-75">
+        <table class="table table-auto w-full">
+    <thead>
+      <tr>
+          <th class="w-1/4 bg-gray-800 text-white px-4 py-2">Activity</th>
+          <th class="w-1/2 bg-gray-800 text-white px-4 py-2">Description</th>
+          <th class="w-1/4 bg-gray-800 text-white px-4 py-2">Due Date</th>
+          <th class="w-1/4 bg-gray-800 text-white px-4 py-2">Contacts (or Notify)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for reminder in reminders %}
+        <tr>
+          <td class="border border-gray-200 px-4 py-2">{{ reminder.serverName }}</td>
+          <td class="border border-gray-200 px-4 py-2">{{ reminder.comments }}</td>
+          <td class="border border-gray-200 px-4 py-2">{{ reminder.date }}</td>
+          <td class="border border-gray-200 px-4 py-2">{{ reminder.email }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+        <!-- Modal for Adding New Reminder -->
+        <div id="addReminderModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden">
+            <div class="bg-white max-w-md mx-auto p-8 mt-20 rounded">
+                <h2 class="text-2xl font-bold mb-4">Add Reminder</h2>
+                <form id="addReminderForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="serverName">Server Name</label>
+                        <input type="text" id="serverName" name="serverName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" maxlength="50" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="comments">Comments</label>
+                        <textarea id="comments" name="comments" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" maxlength="50"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Date</label>
+                        <input type="date" id="date" name="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email (Comma Separated organisation)</label>
+                        <input type="text" id="email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" maxlength="50" required>
+                    </div>
+                    <div class="flex justify-between">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Submit
+                        </button>
+                        <button type="button" id="cancelReminderBtn" class="bg-gray-400 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Include Tailwind CSS -->
+{#    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>#}
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+         // Close modal when "Close" button is clicked
+                document.getElementById("cancelReminderBtn").addEventListener("click", function() {
+                    document.getElementById("addReminderModal").classList.add("hidden");
+                });
+        // Show Modal on Add Reminder Button Click
+        document.getElementById("addReminderBtn").addEventListener("click", function() {
+            document.getElementById("addReminderModal").classList.remove("hidden");
+        });
+
+        // Submit Form
+       document.getElementById("addReminderForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    var serverName = document.getElementById("serverName").value;
+    var comments = document.getElementById("comments").value;
+    var date = document.getElementById("date").value;
+    var email = document.getElementById("email").value;
+
+    // Check email format
+    var emailRegex = /(?:[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})/g;
+    if (!email.match(emailRegex)) {
+        alert("Invalid email format.");
+        return;
+    }
+
+    // Prepare data as JSON object
+    var data = {
+        serverName: serverName.substring(0, 50),
+        comments: comments.substring(0, 50),
+        date: date,
+        email: email.substring(0, 50)
+    };
+
+    // Send data to server
+    fetch('/submit_form', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Reminder added successfully.");
+            window.location.reload();
+        } else {
+            console.error("Failed to add reminder:", response.statusText);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+
+    // Clear form fields
+    document.getElementById("serverName").value = "";
+    document.getElementById("comments").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("email").value = "";
+
+    // Close modal
+    document.getElementById("addReminderModal").classList.add("hidden");
+});
+
+    });
+</script>
+
+</body>
+</html>
