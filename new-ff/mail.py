@@ -10,13 +10,14 @@ app.config['MAIL_USE_TLS'] = True  # Enable TLS encryption
 app.config['MAIL_USERNAME'] = 'your_email@example.com'  # Replace with your email
 app.config['MAIL_PASSWORD'] = 'your_password'  # Replace with your email password
 
+
 mail = Mail(app)
 
 @app.route('/')
 def send_email():
     msg = Message('Test Email from Flask App', sender='your_email@example.com', recipients=['recipient_email@example.com'])
     msg.body = "This is a test email sent from a Flask application."
-    msg.html = render_template('email.html', content="This is a test email with HTML content.")  # Optional HTML content
+    msg.html = render_template('email.html', content="This is the content passed to the template.")  # Pass content variable
 
     try:
         mail.send(msg)
@@ -26,3 +27,4 @@ def send_email():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
