@@ -1,0 +1,54 @@
+import argparse
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+def send_email(subject, message, to_emails, cc_emails):
+    pass
+    send_email_template(sender_email, to_emails, cc_emails, subject, message, smtp_server, smtp_port, smtp_user,
+                        smtp_password)
+
+
+def send_email_template(sender_email, to_emails, cc_emails, subject, message, smtp_server, smtp_port, smtp_user,
+                        smtp_password):
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = ', '.join(to_emails)
+    msg['Cc'] = ', '.join(cc_emails)
+    msg['Subject'] = subject
+
+    body = message
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_user, smtp_password)
+        text = msg.as_string()
+        recipients = to_emails + cc_emails
+        server.sendmail(sender_email, recipients, text)
+        print("Email sent successfully!")
+    except Exception as e:
+        print("Failed to send email:", str(e))
+    finally:
+        server.quit()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Send email via SMTP")
+    parser.add_argument("-s", "--subject", type=str, required=True, help="Email subject")
+    parser.add_argument("-m", "--message", type=str, required=True, help="Email message")
+    parser.add_argument("-t", "--to", type=str, required=True, help="Receiver email(s) for 'To' field, comma-separated if multiple")
+    parser.add_argument("-c", "--cc", type=str, required=False, help="Receiver email(s) for 'CC' field, comma-separated if multiple")
+    args = parser.parse_args()
+
+    sender_email = "abc@xyz.com"
+    to_emails = [email.strip() for email in args.to.split(",")]
+    cc_emails = [email.strip() for email in args.cc.split(",")] if args.cc else []
+    subject = args.subject
+    message = args.message
+    smtp_server = "smtpauth.iis.xyz.net"
+    smtp_port = 25
+    smtp_user = "app-user1"
+    smtp_password = "p@ssword"
+
+    send_email(subject, message, to_emails, cc_emails)
