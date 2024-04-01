@@ -52,3 +52,5 @@ if __name__ == "__main__":
     smtp_password = "p@ssword"
 
     send_email(subject, message, to_emails, cc_emails)
+
+# python send_email.py -s "Test Subject" -m "Test Message" -t "receiver1@example.com,receiver2@example.com" -c "cc1@example.com,cc2@example.com"
