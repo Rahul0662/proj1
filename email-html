@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nagios Alert Notification</title>
+<style>
+    table {
+        border-collapse: collapse;
+        width: 40%; /* Reduced table width */
+        border: 1px solid #ccc;
+    }
+    th, td {
+        padding: 3px; /* Reduced padding */
+        border: 1px solid #ccc;
+        font-size: 12px; /* Reduced font size */
+    }
+    .m1 th {
+        background-color: #0070c0;
+        color: #fff;
+        text-align: left;
+    }
+    th {
+        background-color: #BFC9CA;
+        color: black;
+        text-align: left;
+    }
+</style>
+</head>
+<body style="font-family: Arial, sans-serif;">
+<h1>Cosmos Alert Notification</h1>
+<table style="width: 40%;"> <!-- Adjusted table width -->
+    <tr class="m1">
+        <th colspan="2">Custome Nice</th>
+    </tr>
+</table>
+<table style="width: 40%;"> <!-- Adjusted table width -->
+    <tr>
+       <th colspan="2">Device Data</th>
+    </tr>
+    <tr>
+        <td>Hostname</td>
+        <td>XXX</td>
+    </tr>
+    <tr>
+        <td>Description</td>
+        <td>xx Monitoring Server</td>
+    </tr>
+    <tr>
+        <td>Priority</td>
+        <td>P1</td>
+    </tr>
+    <tr>
+        <td>IP Address</td>
+        <td>127.0.0.1</td>
+    </tr>
+    <tr>
+        <td>Location</td>
+        <td>XXX</td>
+    </tr>
+</table>
+
+
+<table style="width: 40%;"> <!-- Adjusted table width -->
+    <tr>
+        <th colspan="2">Event Data</th>
+    </tr>
+    <tr>
+        <td>Check Name</td>
+        <td>OS_RAM_and_Swap_Usage</td>
+    </tr>
+    <tr>
+        <td>Event State</td>
+        <td>CRITICAL</td>
+    </tr>
+    <tr>
+        <td>Check Description</td>
+        <td>Operating System RAM and Swap usage check.</td>
+    </tr>
+    <tr>
+        <td>Event Date</td>
+        <td>04-04-2024 17:06:25</td>
+    </tr>
+    <tr>
+        <td>Event Detail</td>
+        <td>Memory Utilization CRITICAL - %used_swap is 97.45% 96%used_real is 43.41%</td>
+    </tr>
+</table>
+
+
+<table style="width: 40%;"> <!-- Adjusted table width -->
+    <tr>
+        <th colspan="2">Remediation or Escalation Instructions</th>
+    </tr>
+    <tr>
+        <td>Inform to xyz teama</td>
+    </tr>
+</table>
+<table style="width: 40%;"> <!-- Adjusted table width -->
+    <tr>
+        <th colspan="2">Historical Performance Data</th>
+    </tr>
+</table>
+<img src="https://www.neteye-blog.com/wp-content/uploads/2011/01/perfgraph.png" width="40%">
+</body>
+</html>
